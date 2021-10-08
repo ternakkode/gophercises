@@ -39,19 +39,19 @@ type testResult struct {
 	details       []reportDetail
 }
 
-func newTestResult(question int) *testResult {
-	return &testResult{
+func newTestResult(question int) testResult {
+	return testResult{
 		totalQuestion: question,
 		correctAnswer: 0,
 		details:       make([]reportDetail, 0, question),
 	}
 }
 
-func (tr *testResult) addDetail(detail *reportDetail) {
-	tr.details = append(tr.details, *detail)
+func (tr *testResult) addDetail(detail reportDetail) {
+	tr.details = append(tr.details, detail)
 }
 
-func (tr *testResult) calculateScore(detail *reportDetail) {
+func (tr *testResult) calculateScore(detail reportDetail) {
 	if detail.isCorrect {
 		tr.correctAnswer++
 	}
@@ -64,8 +64,8 @@ type reportDetail struct {
 	isCorrect     bool
 }
 
-func newReportDetail(prb problem, answer string) *reportDetail {
-	return &reportDetail{
+func newReportDetail(prb problem, answer string) reportDetail {
+	return reportDetail{
 		question:      prb.question,
 		userAnswer:    answer,
 		correctAnswer: prb.answer,
@@ -131,7 +131,7 @@ func runQuizes(problems []problem, timelimit int) testResult {
 
 		select {
 		case <-timer.C:
-			return *result
+			return result
 		case userAnswer := <-answerChannel:
 			report := newReportDetail(problem, userAnswer)
 			result.calculateScore(report)
@@ -139,7 +139,7 @@ func runQuizes(problems []problem, timelimit int) testResult {
 		}
 	}
 
-	return *result
+	return result
 }
 
 func getUserAnswer(channel chan string) {
